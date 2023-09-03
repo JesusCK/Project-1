@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mostrar Datos de la Base de Datos</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    
+    function updateTable(data) {
+      const tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+
+      data.forEach(item => {
+        const row = document.createElement('tr');
+
+        for (const key in item) {
+          if (item.hasOwnProperty(key)) {
+            const cell = document.createElement('td');
+            cell.textContent = item[key];
+            row.appendChild(cell);
+          }
+        }
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    function updateTable2(data) {
+        const tableBody = document.getElementById('table-body2');
+        tableBody.innerHTML = '';
+  
+        data.forEach(item => {
+          const row = document.createElement('tr');
+  
+          for (const key in item) {
+            if (item.hasOwnProperty(key)) {
+              const cell = document.createElement('td');
+              cell.textContent = item[key];
+              row.appendChild(cell);
+            }
+          }
+  
+          tableBody.appendChild(row);
+        });
+      }
+
+    socket.on('dataUpdate', updateTable);
+    socket.on('dataUpdate2', updateTable2);
+  </script>
+</head>
+<body>
+  <h1>Último registro</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Latitud</th>
+        <th>Longitud</th>
+        <th>Estampa de tiempo</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</body>
+ 
+ 
+</head>
+<body>
+  <h1>Datos de la Base de Datos</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Latitud</th>
+        <th>Longitud</th>
+        <th>Estampa de tiempo</th>
+      </tr>
+    </thead>
+    <tbody id="table-body2"></tbody>
+  </table>
+</body>
+</html>
