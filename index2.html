@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NovaGPS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <style>
+    /* Estilos CSS para el mapa */
+    #map {
+      height: 400px;
+    }
+
+    /* Estilos para la tabla y el título */
+    #details {
+      background-color: #f5f5f5;
+      padding: 10px;
+      text-align: center;
+    }
+
+    #details h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    #details table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    #details th, #details td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div id="details">
+    <h1>NovaGPS</h1>
+    <table>
+      <tr>
+        <th>Latitud</th>
+        <th>Longitud</th>
+        <th>Estampa de tiempo</th>
+      </tr>
+      <tr id="locationRow">
+        <td>Loading...</td>
+        <td>Loading...</td>
+        <td>Loading...</td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    // Inicializa el mapa Leaflet
+    var map = L.map('map').setView([0, 0], 13); // Coordenadas iniciales y nivel de zoom
+
+    // Agrega una capa de mapa (por ejemplo, Mapbox)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Escucha eventos de socket.io y actualiza la ubicación en el mapa y la tabla
+    var socket = io.connect('http://localhost:3000'); // Ajusta la URL según tu configuración
+    var locationRow = document.getElementById('locationRow'); // Obtén la fila de la tabla
+
+    socket.on('dataUpdate', function(data) {
+      // Actualiza la ubicación en el mapa
+      var latLng = [parseFloat(data.Latitud), parseFloat(data.Longitud)];
+      map.setView(latLng, 13); // Usar latitud y longitud de los datos
+
+      // Actualiza la tabla de detalles
+      locationRow.innerHTML = `<td>${data.Latitud}</td><td>${data.Longitud}</td><td>${data.Estampa_de_tiempo}</td>`;
+    });
+  </script>
+</body>
+</html>
+
