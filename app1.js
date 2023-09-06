@@ -25,7 +25,7 @@ db.connect((err) => {
 
 // Configura la página web
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/index1.html');
 });
 
 // Configura Socket.io para enviar actualizaciones cada 5 segundos
