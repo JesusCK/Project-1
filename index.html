@@ -1,82 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Mostrar Datos de la Base de Datos</title>
+  <meta charset="UTF-8">
+  <title>Última ubicación</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="estilos.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+  <h1>NOVA GPS</h1>
+  
+    <div class="contenedor">
+        <div class="p-contenedor">
+          <p>Latitud: <span id="latitud"></span></p>
+        </div>
+        <div class="p-contenedor">
+          <p>Longitud: <span id="longitud"></span></p>
+        </div>
+        <div class="p-contenedor">
+          <p>Estampa de tiempo: <span id="estampa"></span></p>
+        </div>
+    </div>
+
+
+  
+  
+  
+
+  <div id="map" style="height: 400px;"></div>
+
   <script>
     const socket = io();
     
-    function updateTable(data) {
-      const tableBody = document.getElementById('table-body');
-      tableBody.innerHTML = '';
+    var map = L.map('map').setView([0, 0], 13); // Centrar el mapa en una ubicación inicial
+        
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    }).addTo(map);
 
-      data.forEach(item => {
-        const row = document.createElement('tr');
+    
 
-        for (const key in item) {
-          if (item.hasOwnProperty(key)) {
-            const cell = document.createElement('td');
-            cell.textContent = item[key];
-            row.appendChild(cell);
-          }
-        }
-
-        tableBody.appendChild(row);
-      });
+    function updatetext(data){
+      document.getElementById('latitud').textContent = data.Latitud;
+      document.getElementById('longitud').textContent = data.Longitud;
+      document.getElementById('estampa').textContent = data.Estampa_de_tiempo;
     }
 
-    function updateTable2(data) {
-        const tableBody = document.getElementById('table-body2');
-        tableBody.innerHTML = '';
-  
-        data.forEach(item => {
-          const row = document.createElement('tr');
-  
-          for (const key in item) {
-            if (item.hasOwnProperty(key)) {
-              const cell = document.createElement('td');
-              cell.textContent = item[key];
-              row.appendChild(cell);
+    function updateMarker(data) {
+            if (typeof marker !== 'undefined') {
+                map.removeLayer(marker);
             }
-          }
-  
-          tableBody.appendChild(row);
-        });
-      }
+            
+            marker = L.marker([data.Latitud,data.Longitud]).addTo(map);
+        }
 
-    socket.on('dataUpdate', updateTable);
-    socket.on('dataUpdate2', updateTable2);
+    function updatemap(data){
+      map.setView([data.Latitud, data.Longitud], 13);
+    }
+    
+    socket.on('update',updatetext );
+    socket.on('update',updateMarker );
+    socket.on('update',updatemap)
   </script>
-</head>
-<body>
-  <h1>Último registro</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Latitud</th>
-        <th>Longitud</th>
-        <th>Estampa de tiempo</th>
-      </tr>
-    </thead>
-    <tbody id="table-body"></tbody>
-  </table>
-</body>
- 
- 
-</head>
-<body>
-  <h1>Datos de la Base de Datos</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Latitud</th>
-        <th>Longitud</th>
-        <th>Estampa de tiempo</th>
-      </tr>
-    </thead>
-    <tbody id="table-body2"></tbody>
-  </table>
 </body>
 </html>
