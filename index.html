@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NOVA GPS</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="/estilos.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+  <h1>NOVA GPS</h1>
+  
+    <div class="contenedor">
+        <div class="p-contenedor">
+          <p>Latitud: <span id="latitud"></span></p>
+        </div>
+        <div class="p-contenedor">
+          <p>Longitud: <span id="longitud"></span></p>
+        </div>
+        <div class="p-contenedor">
+          <p>Estampa de tiempo: <span id="estampa"></span></p>
+        </div>
+    </div>
+
+
+  
+  
+  
+
+  <div id="map" style="height: 400px;"></div>
+
+  <script>
+    const socket = io();
+    
+    var map = L.map('map').setView([0, 0], 13); // Centrar el mapa en una ubicación inicial
+        
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    }).addTo(map);
+
+    
+
+    function updatetext(data){
+      document.getElementById('latitud').textContent = data.Latitud;
+      document.getElementById('longitud').textContent = data.Longitud;
+      document.getElementById('estampa').textContent = data.Estampa_de_tiempo;
+    }
+
+    function updateMarker(data) {
+            if (typeof marker !== 'undefined') {
+                map.removeLayer(marker);
+            }
+            
+            marker = L.marker([data.Latitud,data.Longitud]).addTo(map);
+        }
+
+    function updatemap(data){
+      map.setView([data.Latitud, data.Longitud], 13);
+    }
+    
+    socket.on('update',updatetext );
+    socket.on('update',updateMarker );
+    socket.on('update',updatemap)
+  </script>
+</body>
+</html>
